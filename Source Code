@@ -1,0 +1,78 @@
+import smtplib
+import speech_recognition as sr
+import pyttsx3
+from email.message import EmailMessage
+
+listener = sr.Recognizer()
+engine = pyttsx3.init()
+
+
+def talk(text):
+    engine.say(text)
+    engine.runAndWait()
+
+
+def get_info():
+    try:
+        with sr.Microphone() as source:
+            print('listening...')
+            voice = listener.listen(source)
+            info = listener.recognize_google(voice)
+            print(info)
+            return info.lower()
+
+    except:
+        pass
+
+
+def send_email(receiver, subject, message):
+    server = smtplib.SMTP('smtp.gmail.com', 587)
+    server.starttls()
+    server.login('sender@gmail.com', 'sender@123')
+    email = EmailMessage()
+    email['From'] = 'sender@gmail.com'
+    email['To'] = receiver
+    email['Subject'] = subject
+    server.set_content(message)
+    server.send_message(email)
+
+
+# server.sendmail('im2anonymous4@gmail.com',
+#               'aravindkrishna877@gmail.com',
+#              'Subject: Service Check '
+#             '\n\n Dear User, '
+#            '\n\n Thank You for participate.... '
+#           '\n\n Regards,'
+#          '\n Anonymous'
+#         '\n\n\n ******This is system generated mail****** '
+#        '\n\t\t\t Do not reply...!.\n\n'
+#       )
+# print('Email Send Successfully...!')
+
+
+email_list = {
+    'test1': 'test1@gmail.com',
+    'test2': 'test2@gmail.com',
+    'test3': 'test3@gmail.com'
+}
+
+
+def get_email_info():
+    talk('Hi Aravind'
+         '\n\n\n To Whom you want to send email')
+    name = get_info()
+    receiver = email_list[name]
+    print(receiver)
+    talk('What is the subject of your email?')
+    subject = get_info()
+    talk('Tell me the text in your email')
+    message = get_info()
+    send_email(receiver, subject, message)
+    talk('Hey lazy dude. Your email is sent')
+    talk('Do you want to send more email ?')
+    send_more = get_info()
+    if 'yes' in send_more:
+        get_email_info()
+
+
+get_email_info()
